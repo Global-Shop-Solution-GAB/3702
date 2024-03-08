@@ -1,0 +1,85 @@
+Program.Sub.ScreenSU.Start
+Program.Sub.ScreenSU.End
+
+Program.Sub.Preflight.Start
+
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+' 6/4/2010
+' Originally for Air Quality Engineering
+' Custom Reorder Point Calculator
+' JSO
+' Custom Hook
+' 7/13/2010 completion pop-up message removed per customer
+
+Function.ODBC.Connection!con.OpenConnection(Variable.Ambient.PDSN,Variable.Ambient.PUser,Variable.Ambient.PPass,180)
+
+Function.Intrinsic.Control.CallSub(Calcs)
+
+
+
+
+Program.Sub.Main.End
+
+Program.Sub.Calcs.Start
+Variable.Local.sSQL.Declare(String)
+Variable.Local.sSQL2.Declare(String)
+Variable.Local.fReordPt.Declare(Float)
+Variable.Local.fSixMoU.Declare(Float)
+Variable.Local.fLead.Declare(Float)
+Variable.Local.fUDef.Declare(Float)
+Variable.local.fSafeStock.Declare(Float)
+Variable.Local.iMonth.Declare(Long)
+Variable.Local.sPart.Declare(String)
+Variable.Local.sLoc.Declare(String)
+
+V.local.sSQL.Set("SELECT * FROM INVENTORY_MSTR A, INVENTORY_MST2 B WHERE A.PART = B.PART AND A.LOCATION = B.LOCATION AND (B.CODE_SOURCE = 'M' OR B.CODE_SOURCE = 'P') ORDER BY A.PART")
+Function.ODBC.Connection!con.OpenRecordsetRO("rst1",V.Local.sSQL)
+Function.Intrinsic.Control.DoUntil(V.ODBC.con!rst1.EOF,=,True)
+	V.Local.sPart.Set(V.ODBC.con!rst1.FieldVal!PART)
+	V.Local.sLoc.Set(V.ODBC.con!rst1.FieldVal!LOCATION)
+	Function.intrinsic.date.month(Variable.ambient.Now,V.local.iMonth)
+	Function.Intrinsic.Control.SelectCase(V.Local.iMonth)
+		Function.Intrinsic.Control.Case(1)
+			Function.Intrinsic.Math.Add(V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_12,V.odbc.con!rst1.FieldVal!QTY_USAGE_MO_11,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_10,V.ODBC.con!rst1.Fieldval!QTY_USAGE_MO_09,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_08,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_07,V.Local.fSixMoU)
+		Function.Intrinsic.Control.Case(2)
+			Function.Intrinsic.Math.Add(V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_01,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_12,V.odbc.con!rst1.FieldVal!QTY_USAGE_MO_11,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_10,V.ODBC.con!rst1.Fieldval!QTY_USAGE_MO_09,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_08,V.Local.fSixMoU)
+		Function.Intrinsic.Control.Case(3)
+			Function.Intrinsic.Math.Add(V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_02,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_01,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_12,V.odbc.con!rst1.FieldVal!QTY_USAGE_MO_11,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_10,V.ODBC.con!rst1.Fieldval!QTY_USAGE_MO_09,V.Local.fSixMoU)
+		Function.Intrinsic.Control.Case(4)
+			Function.Intrinsic.Math.Add(V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_03,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_02,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_01,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_12,V.odbc.con!rst1.FieldVal!QTY_USAGE_MO_11,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_10,V.Local.fSixMoU)
+		Function.Intrinsic.Control.Case(5)
+			Function.Intrinsic.Math.Add(V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_04,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_03,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_02,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_01,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_12,V.odbc.con!rst1.FieldVal!QTY_USAGE_MO_11,V.Local.fSixMoU)
+		Function.Intrinsic.Control.Case(6)
+			Function.Intrinsic.Math.Add(V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_05,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_04,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_03,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_02,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_01,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_12,V.Local.fSixMoU)
+		Function.Intrinsic.Control.Case(7)
+			Function.Intrinsic.Math.Add(V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_06,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_05,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_04,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_03,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_02,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_01,V.Local.fSixMoU)
+		Function.Intrinsic.Control.Case(8)
+			Function.Intrinsic.Math.Add(V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_07,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_06,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_05,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_04,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_03,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_02,V.Local.fSixMoU)
+		Function.Intrinsic.Control.Case(9)
+			Function.Intrinsic.Math.Add(V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_08,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_07,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_06,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_05,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_04,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_03,V.Local.fSixMoU)
+		Function.Intrinsic.Control.Case(10)
+			Function.Intrinsic.Math.Add(V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_09,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_08,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_07,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_06,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_05,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_04,V.Local.fSixMoU)
+		Function.Intrinsic.Control.Case(11)
+			Function.Intrinsic.Math.Add(V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_10,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_09,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_08,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_07,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_06,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_05,V.Local.fSixMoU)
+		Function.Intrinsic.Control.Case(12)
+			Function.Intrinsic.Math.Add(V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_11,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_10,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_09,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_08,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_07,V.ODBC.con!rst1.FieldVal!QTY_USAGE_MO_06,V.Local.fSixMoU)
+	Function.intrinsic.control.endselect
+	Function.Intrinsic.Math.Div(V.Local.fSixMoU,182,V.local.fSixMoU)
+	Function.Intrinsic.Math.Add(V.ODBC.con!rst1.FieldVal!TIME_MATERIAL_LEAD,14,V.Local.fLead)
+	Function.Intrinsic.Math.ConvertToFloat(V.ODBC.con!rst1.FieldVal!TEXT_INFO2,V.Local.fUDef)
+	V.Local.fSafeStock.set(V.ODBC.con!rst1.FieldVal!QTY_SAFETY)
+	Function.Intrinsic.Math.Mult(V.Local.fSixMoU,V.Local.fLead,V.Local.fUDef,V.Local.fReordPt)
+	Function.Intrinsic.Math.Add(V.Local.fReordPt,V.Local.fSafeStock,V.Local.fReordPt)
+	Function.Intrinsic.Math.Round(V.Local.fReordPt,4,V.Local.fReordPt)
+	Function.Intrinsic.String.Concat("UPDATE INVENTORY_MSTR SET QTY_REORDER = ",V.Local.fReordPt," WHERE PART = '",V.Local.sPart,"' AND LOCATION = '",V.Local.sLoc,"'",V.Local.sSQL2)
+	Function.ODBC.Connection!con.Execute(V.Local.sSQL2)
+	Function.ODBC.con!rst1.MoveNext
+Function.Intrinsic.Control.Loop
+Function.ODBC.con!rst1.Close
+'Function.Intrinsic.UI.Msgbox("Reorder Points Calculated")
+
+Program.Sub.Calcs.End
+
+
